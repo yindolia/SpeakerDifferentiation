@@ -17,15 +17,12 @@ DATA_DIR = "/Users/yindolia/Desktop/data-comedy/TEDLIUM_dataset/TEDLIUM_release2
 
 
 def gen_data(one_hot):
-
     all_files = os.listdir(DATA_DIR)
     print(len(all_files))
     if all_files[0]==".DS*":
         all_files.pop(0)
     new_groups = []
     nested_list=[]
-
-
     j = 1
     for i in range(1,len(all_files)):
     
@@ -44,13 +41,10 @@ def gen_data(one_hot):
     nested_y = np.delete(nested_y, 73,0)
     return nested_list, nested_y
 
-
 def gen_melspec(add):
     y, sr = librosa.load(add)
     mspect= librosa.feature.melspectrogram(y =y, sr = sr, n_mels = 40)
     return mspect
-
-
 
 def gen_speaker(speakerList):
     mspect = np.empty(shape=[40,0])
@@ -62,18 +56,11 @@ def gen_speaker(speakerList):
         mspect = np.hstack((mspect, mspect1))
     return mspect
 
-
-def gen_batch(x,y):
-
-    
+def gen_batch(x,y):    
     batchx = gen_speaker(x)
-    
     extra = len(batchx[0])%40
     print(len(batchx[0]), extra, y)
-    
-    
     siz= len(batchx[0]) - extra
-    
     to_del = np.random.randint(len(batchx[0]-2), size =extra)
     batchx =np.delete(batchx, to_del, 1)
     dm= divmod(len(batchx[0])/40,1)
@@ -90,19 +77,13 @@ def gen_batch(x,y):
     batchy = batchy[:part]
     return batchx,batchy, testx, testy
 
-
-
-
-
 def feed_data(hot):
-    
     dataX, dataY= gen_data(hot)
     all_batch_train_x = [0]
     all_batch_train_y = [0]
     all_batch_test_x = [0]
     all_batch_test_y = [0]
     for dx, dy in zip(dataX, dataY):
-        
         gbatchx, gbatchy, gtestx, gtesty = gen_batch(dx,dy)
         print(len(gbatchx), len(gbatchy))
         all_batch_train_x.append(gbatchx)
@@ -121,7 +102,6 @@ def feed_data(hot):
 
     return np.array(all_train_flat_x), np.array(all_train_flat_y), np.array(all_test_flat_x), np.array(all_test_flat_y)
 
-
 def cal_y(Y):
     
     Y = Y.reshape(len(Y),1)
@@ -133,12 +113,10 @@ def cal_y(Y):
     return Y
 
 def sav_file(X1, Y1, testX1, testY1):
-
     outfileX1 = TemporaryFile()
     outfileY1 = TemporaryFile()
     outfileXtest = TemporaryFile()
     outfileYtest = TemporaryFile()
-    
     np.save(outfileX1, X1)
     np.save(outfileY1, Y1)
     np.save(outfileXtest, testX1)
